@@ -1,27 +1,30 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useState, } from "react";
+import { usePrevious } from "react-delta";
 import { View, StyleSheet, Image, Text, TextInput, Button, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from "react-native";
-import { ImageBackground } from "react-native-web";
-import { Photo } from "../img/addPhoto";
+
+
 
 const initialState = { login: '', email:'', password:''};
 
 
-export const RegistrationScreen = () => {
+export const RegistrationScreen = ({blur}) => {
     const [secure, setSecure] = useState(true);
     const [value, setValue] = useState(initialState);
     const [target, setTarget] = useState('');
-        
-        const funcSubmit = () => { console.log(value); setValue(initialState);};
+    const prev = usePrevious(blur);
+       
+    const funcSubmit = () => { console.log(value); setValue(initialState);};
     
-    const upd = useCallback(()=>setTarget(''),[]);
-    
+    useEffect(() => { if (!prev) { return setTarget('') } }); // костыль
+   
     return (
         <View style={{ ...styles.container, marginTop:  target  ? 147 : 263 }} >
-            <ImageBackground style={styles.image}>
-                  <Image style={styles.png} source={require("../img/Add.svg")} ></Image>
-            </ImageBackground>
-          
+            
+                <View style={styles.image}>
+                    <Image style={styles.png} source={require("../img/add.png")} ></Image>
+                    </View>
+                               
              <Text style={styles.text}>Регистрация</Text>
             <View style={styles.innerBox} >
                 <TextInput
@@ -29,7 +32,6 @@ export const RegistrationScreen = () => {
                     style={{ ...styles.input, borderColor: target === 'login'? '#FF6C00':'#e8e8e8' }}
                     placeholder={'Логин'}
                     placeholderTextColor={'#bdbdbd'}
-                    onBlur={upd}
                     value={value.login}
                     onChangeText={(val)=>setValue((preSt)=> ({...preSt,login:val}))}
                 />
@@ -39,7 +41,6 @@ export const RegistrationScreen = () => {
                     style={{ ...styles.input, borderColor: target === 'email'?'#FF6C00':'#e8e8e8' }}
                     placeholder={'Адресс электронной почты'}
                     placeholderTextColor={'#bdbdbd'}
-                    onBlur={upd}
                     value={value.email}
                     onChangeText={(val)=>setValue((preSt)=> ({...preSt,email:val}))}
                 />
@@ -51,13 +52,11 @@ export const RegistrationScreen = () => {
                         placeholderTextColor={'#bdbdbd'}
                         secureTextEntry={secure}
                         onFocus={() => {  return setTarget('password'); }}
-                        onBlur={upd}
                         value={value.password}
                         onChangeText={(val)=>setValue((preSt)=> ({...preSt,password:val}))}
                     />
                     <Text onPress={() => secure ? setSecure(false) : setSecure(true)} style={styles.show}>{secure?'Показать':'Скрыть'}</Text>
                 </View>
-                {/* <Button style={styles.btn} title={'Зарегистрироваться'} /> */}
                 <TouchableOpacity style={styles.btn}  onPress={funcSubmit}>
                     <Text style={styles.txtBtn}>Зарегистрироваться</Text>
                 </TouchableOpacity>
@@ -70,15 +69,14 @@ export const RegistrationScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        // width: '100%',
+        position:'absolute',
         backgroundColor: '#ffffff',
         alignItems: 'center',
         borderTopLeftRadius: 25,
         borderTopRightRadius: 25,
-        flex: 1,
-       
-            
-        
+        width: '100%',
+        height:'100%'
+               
     },
     image: {
     width: 120,
@@ -156,13 +154,15 @@ const styles = StyleSheet.create({
         color: '#1B4371',
     },
     png: {
+        // flex:1,
         alignSelf: 'flex-end',
-        borderRadius:'50%',
+        // borderRadius:'50%',
         width: 25,
         height: 25,
         justifyContent: 'flex-end',
         marginRight: -12.5,
-        marginTop: 81
+        marginTop: 81,
+        zIndex: 999
         
 
       

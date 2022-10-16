@@ -1,17 +1,20 @@
 import React from "react";
 import { useState, } from "react";
+import { usePrevious } from "react-delta";
 import { View, StyleSheet, Image, Text, TextInput, Button, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from "react-native";
 
 const initialState = {  email:'', password:''};
 
 
-export const LoginScreen = () => {
+export const LoginScreen = ({blur}) => {
     const [secure, setSecure] = useState(true);
     const [value, setValue] = useState(initialState);
     const [target, setTarget] = useState('');
-        
+    const prev = usePrevious(blur);
+    
    const funcSubmit = () => { console.log(value); setValue(initialState);};
     
+    useEffect(() => { if (!prev) { return setTarget('') } });
     
     return (
         <View style={{ ...styles.container, marginTop:  target  ? 273 : 323 }} >
@@ -24,7 +27,6 @@ export const LoginScreen = () => {
                     style={{ ...styles.input, borderColor: target === 'email'?'#FF6C00':'#e8e8e8' }}
                     placeholder={'Адресс электронной почты'}
                     placeholderTextColor={'#bdbdbd'}
-                    onBlur={() => { setTarget(''); }}
                     value={value.email}
                     onChangeText={(val)=>setValue((preSt)=> ({...preSt,email:val}))}
                 />
@@ -36,13 +38,11 @@ export const LoginScreen = () => {
                         placeholderTextColor={'#bdbdbd'}
                         secureTextEntry={secure}
                         onFocus={() => {  return setTarget('password'); }}
-                        onBlur={() => {  setTarget(''); }}
                         value={value.password}
                         onChangeText={(val)=>setValue((preSt)=> ({...preSt,password:val}))}
                     />
                     <Text onPress={() => secure ? setSecure(false) : setSecure(true)} style={styles.show}>{secure?'Показать':'Скрыть'}</Text>
                 </View>
-                {/* <Button style={styles.btn} title={'Зарегистрироваться'} /> */}
                 <TouchableOpacity style={styles.btn}  onPress={funcSubmit}>
                     <Text style={styles.txtBtn}>Войти</Text>
                 </TouchableOpacity>
@@ -55,18 +55,14 @@ export const LoginScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        // width: '100%',
+      position:'absolute',
         backgroundColor: '#ffffff',
         alignItems: 'center',
         borderTopLeftRadius: 25,
         borderTopRightRadius: 25,
-        flex: 1,
-        // height: '100%'
-        // height: 'max-content'
-       
-            
-        
-    },
+        width: '100%',
+        height:'100%'
+     },
    
     text: {
     fontFamily: "Roboto",

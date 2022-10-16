@@ -1,56 +1,44 @@
-import { StyleSheet, View, ImageBackground, Text, KeyboardAvoidingView, Keyboard, Platform, TouchableWithoutFeedback } from 'react-native';
+import { useEffect, useLayoutEffect, useState } from 'react';
+import { StyleSheet, View, ImageBackground, KeyboardAvoidingView, Keyboard, Platform, TouchableWithoutFeedback,} from 'react-native';
 import { component } from './Screens';
 const {RegistrationScreen, LoginScreen } = component;
 
 
 export default function App() {
-  
-  const funcHide = (t) => {
+  const [stop, setStop] = useState('stop');
+
+  const funcHide = () => {
   
     Keyboard.dismiss();
-     
-};
-  
+    if (stop) {
+      return setStop('');
+    }
+  };
+   
+  useEffect(() => { if (!stop) { return setStop('stop') } });
   
   return (
-   
-    <ImageBackground source={require("./img/phoneApp.jpg")} resizeMode={'stretch'} style={styles.image}>
     <TouchableWithoutFeedback onPress={funcHide}>
+    <KeyboardAvoidingView style={{position:'relative'}}  behavior={Platform.OS === 'ios'?'padding':'height'}>
+   
+      <ImageBackground source={require("./img/phoneApp.jpg")} resizeMode={'cover'} style={styles.image}/>
+   
+       <RegistrationScreen blur={stop}  />
+         {/* <LoginScreen />  */}
+              
+          
     
-      <View style={styles.container}>
-        
-    
-        
-          <RegistrationScreen  />
-          {/* <LoginScreen /> */}
-       
-        
-         
-        </View>
-     
-    </TouchableWithoutFeedback>
-      </ImageBackground>
+      </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
        
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // backgroundColor: '#ffffff',
- 
-  },
+  
   image: {
-   
-    // position:'relative',
-    // flex: 1,
-    
-    width: '100%',
-    height: '100%'
-    // alignItems: 'center',
-    // justifyContent: 'center',
-    // justifyContent: "flex-end"
-    
-  },
+   width: '100%',
+   height: '100%',
+   },
  
 });
